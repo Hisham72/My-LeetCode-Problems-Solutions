@@ -1,35 +1,23 @@
 class Solution {
 public:
     vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-        vector<int> ret;
-        stack<pair<int, int> > st1, st2;
-        int mx = INT32_MIN, val;
+        vector<int> ans;
+        deque<int> dq;
         for (int i = 0; i < k; i++){
-        	val = nums[i];
-        	mx = max(mx, val);
-        	st1.emplace(val, mx);
+        	while (dq.size() && dq.back() < nums[i]) dq.pop_back();
+        	dq.push_back(nums[i]);
         }
-        if (st1.size())
-            ret.push_back(st1.top().second);
-        for (int i = k; i < nums.size(); i++){
-        	if (st2.empty()){
-        		mx = INT32_MIN;
-        		while (st1.size()){
-        			val = st1.top().first;
-        			mx = max(mx, val);
-        			st2.emplace(val, mx);
-        			st1.pop();
-        		}
-        	}
-        	st2.pop();
-        	val = nums[i];
-        	mx = val;
-        	if (st1.size()) mx = max(mx, st1.top().second);
-        	st1.emplace(val, mx);
-            if (st2.size()) mx = max(mx, st2.top().second);
-        	ret.push_back(mx);
+        ans.push_back(dq.front());
+        for (int i = 0, j = k; j < nums.size(); i++, j++){
+        	//pop
+        	if (dq.size() && dq.front() == nums[i]) dq.pop_front();
+        	//push
+        	while (dq.size() && dq.back() < nums[j]) dq.pop_back();
+        	dq.push_back(nums[j]);
+        	
+        	//add to ans
+        	ans.push_back(dq.front());
         }
-        return ret;
+		return ans;
     }
-    
 };
